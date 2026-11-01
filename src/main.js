@@ -20,7 +20,14 @@ $('app').innerHTML = `
 <section class="panel"><div class="heading"><span class="step">02</span><h2>Quantity & personalization</h2></div><div class="toggle"><button type="button" id="sameBtn" class="active">Identical cards</button><button type="button" id="personalBtn">Personalized (CSV)</button></div>
 <div id="sameBox"><label class="field">Number of cards<input id="quantity" type="number" min="1" max="50000" value="100"/></label><p class="hint" id="sheetEstimate">10 sheets for 100 cards</p></div>
 <div id="personalBox" hidden><label class="upload mini" for="csvFile"><strong>Upload CSV</strong><span>One row per person; optional <code>quantity</code> column</span><input type="file" id="csvFile" accept=".csv,text/csv"><b id="csvName">+ Choose CSV</b></label><div class="field-grid"><label class="field">Name column<select id="nameCol"></select></label><label class="field">Title column<select id="titleCol"></select></label><label class="field">Email column<select id="emailCol"></select></label><label class="field">Phone column<select id="phoneCol"></select></label><label class="field">Company column<select id="companyCol"></select></label></div><p class="hint">Text will overlay the front design. Leave a clear area on your Canva template for these fields. Blank mappings are ignored.</p><div class="field-grid"><label class="field">Text X (mm from left)<input type="number" id="textX" value="8" min="0" max="90" step="0.5"></label><label class="field">Text Y (mm from top)<input type="number" id="textY" value="20" min="0" max="50" step="0.5"></label><label class="field">Font size (pt)<input type="number" id="fontSize" value="9" min="4" max="20" step="0.5"></label><label class="field">Line spacing (mm)<input type="number" id="lineGap" value="5" min="2" max="12" step="0.5"></label></div><div class="field-grid"><label class="field">Name color<input type="color" id="nameColor" value="#244a69"></label><label class="field">Title color<input type="color" id="titleColor" value="#244a69"></label><label class="field">Contact color<input type="color" id="contactColor" value="#244a69"></label><label class="field">Title size (pt)<input type="number" id="titleSize" value="8" min="4" max="20" step="0.5"></label></div><p class="hint">Names and contacts use Poppins; job titles use Montserrat. Company column can contain PT SOL or Santo Rubber Factory.</p><p class="hint" id="csvSummary">No CSV loaded</p></div></section>
-<section class="panel"><div class="heading"><span class="step">03</span><h2>Print setup</h2></div><div class="field-grid"><label class="field">Card width (mm)<input id="cardW" type="number" value="90" min="30" max="95" step="0.5"></label><label class="field">Card height (mm)<input id="cardH" type="number" value="50" min="20" max="55" step="0.5"></label><label class="field">Column gap (mm)<input id="gapX" type="number" value="4" min="2" max="15" step="0.5"></label><label class="field">Row gap (mm)<input id="gapY" type="number" value="4" min="2" max="15" step="0.5"></label></div><label class="check"><input id="cropMarks" type="checkbox" checked> Add trim/crop marks</label><label class="check"><input id="outline" type="checkbox"> Add faint card borders (testing only)</label><label class="field">Back-side placement<select id="mirror"><option value="horizontal">Mirror columns (recommended starting point)</option><option value="none">Same positions</option><option value="vertical">Reverse rows</option><option value="both">Rotate positions 180°</option></select></label><p class="hint">Back placement depends on how your printer flips paper. Always test one double-sided sheet before a batch.</p></section>
+<section class="panel" id="editorPanel"><div class="heading"><span class="step">03</span><h2>Visual template editor</h2></div><p class="hint">Choose a company and drag each label to match its Canva design. Changes are saved in this browser.</p>
+<div class="field-grid"><label class="field">Company<select id="editorCompany"><option value="front">PT SOL</option><option value="alternate">Santo Rubber Factory</option></select></label><label class="field">Edit field<select id="editorField"><option value="name">Employee name</option><option value="title">Job title</option><option value="email">Email</option><option value="phone">Phone</option></select></label></div>
+<div id="cardEditor" class="card-editor"><div id="cardEditorBackground" class="card-editor-bg"></div><div id="editorHandles"></div></div>
+<div class="field-grid"><label class="field">X position (mm)<input id="editX" type="number" step="0.5" min="0"></label><label class="field">Y position (mm)<input id="editY" type="number" step="0.5" min="0"></label><label class="field">Font size (pt)<input id="editSize" type="number" step="0.5" min="4" max="22"></label><label class="field">Text color<input id="editColor" type="color"></label></div>
+<div class="field-grid"><label class="field">Preview name<input id="previewName" value="Elaine Hsu"></label><label class="field">Preview title<input id="previewTitle" value="Business Development"></label><label class="field">Preview email<input id="previewEmail" value="name@example.com"></label><label class="field">Preview phone<input id="previewPhone" value="+62 812 3456 7890"></label></div>
+<button type="button" class="secondary" id="resetLayout">Reset selected company layout</button>
+<p class="hint">Canvas background artwork should not contain old employee details. Your PDF uses the same field coordinates and styling as this editor.</p></section>
+<section class="panel"><div class="heading"><span class="step">04</span><h2>Print setup</h2></div><div class="field-grid"><label class="field">Card width (mm)<input id="cardW" type="number" value="90" min="30" max="95" step="0.5"></label><label class="field">Card height (mm)<input id="cardH" type="number" value="50" min="20" max="55" step="0.5"></label><label class="field">Column gap (mm)<input id="gapX" type="number" value="4" min="2" max="15" step="0.5"></label><label class="field">Row gap (mm)<input id="gapY" type="number" value="4" min="2" max="15" step="0.5"></label></div><label class="check"><input id="cropMarks" type="checkbox" checked> Add trim/crop marks</label><label class="check"><input id="outline" type="checkbox"> Add faint card borders (testing only)</label><label class="field">Back-side placement<select id="mirror"><option value="horizontal">Mirror columns (recommended starting point)</option><option value="none">Same positions</option><option value="vertical">Reverse rows</option><option value="both">Rotate positions 180°</option></select></label><p class="hint">Back placement depends on how your printer flips paper. Always test one double-sided sheet before a batch.</p></section>
 <section class="panel action"><button class="primary" id="generate">Generate A4 PDF <span>↗</span></button><div id="status" role="status" aria-live="polite"></div><button class="secondary" id="test">Make duplex alignment test (1 sheet)</button></section>
 </div><aside class="preview panel"><div class="preview-head"><div><div class="eyebrow">LIVE PREVIEW</div><h2>One A4 sheet</h2></div><span class="badge" id="pages">10 cards</span></div><div class="sheet-wrap"><div id="sheet" class="sheet"></div></div><div class="legend"><span><i class="swatch"></i> Card trim area</span><span>2 columns × 5 rows</span></div><div class="info"><strong>Printing checklist</strong><p>Print at <b>100% / Actual size</b> on A4 paper. Disable “Fit to page.” For double-sided printing, choose your printer’s long-edge or short-edge flip setting and compare a one-sheet test before printing in bulk.</p></div></aside></div>
 <footer>CardPress · PDF generation happens on your machine · No account required</footer></main>`;
@@ -48,28 +55,89 @@ async function embedded(pdf,source){if(!source)return null;if(source.type==='ima
 function placeArt(page,art,pos,p){if(!art)return;const x=mm(pos.x),y=A4.height-mm(pos.y+p.cardH),width=mm(p.cardW),height=mm(p.cardH);if(art.kind==='image')page.drawImage(art.obj,{x,y,width,height});else page.drawPage(art.obj,{x,y,width,height});}
 function mappedIndex(i,mirror){const row=Math.floor(i/2),col=i%2;let r=row,c=col;if(mirror==='horizontal'||mirror==='both')c=1-c;if(mirror==='vertical'||mirror==='both')r=4-r;return r*2+c;}
 function overlay(page,item,pos,p,regular,bold,test=false){if(!test&&state.mode!=='personal')return;const lines=test?[item.label,'FRONT / BACK CHECK']:['nameCol','titleCol','emailCol','phoneCol'].map(id=>$(id).value?String(item[$(id).value]??'').trim():'').filter(Boolean);const tx=mm(pos.x+p.textX);let yy=pos.y+p.textY;for(let k=0;k<lines.length;k++){const line=lines[k];const font=k===0?bold:regular;const size=k===0?p.fontSize:Math.max(5,p.fontSize-1);const maxWidth=mm(Math.max(2,p.cardW-p.textX-2));let shown=line;while(shown.length&&font.widthOfTextAtSize(shown,size)>maxWidth)shown=shown.slice(0,-1);if(shown.length<line.length)shown=shown.slice(0,-3)+'...';if(yy<p.cardH-1)page.drawText(shown,{x:tx,y:A4.height-mm(yy)-size,size,font,color:tint});yy+=p.lineGap;}}
-async function overlayStyled(pdf,page,item,pos,p){
- const fields=[['nameCol','Poppins',p.fontSize,$('nameColor').value,600],['titleCol','Montserrat',p.titleSize,$('titleColor').value,500],['emailCol','Poppins',Math.max(5,p.fontSize-1),$('contactColor').value,400],['phoneCol','Poppins',Math.max(5,p.fontSize-1),$('contactColor').value,400]];
- const lines=fields.map(([id,family,size,color,weight])=>({text:$(id).value?String(item[$(id).value]??'').trim():'',family,size,color,weight})).filter(x=>x.text);
- if(!lines.length)return;
+async function overlayStyled(pdf,page,item,pos,p,company){
+ const canvas=document.createElement('canvas'),scale=8;
+ canvas.width=Math.round(p.cardW*scale);canvas.height=Math.round(p.cardH*scale);
+ const ctx=canvas.getContext('2d');ctx.textBaseline='top';
+ const map={name:'nameCol',title:'titleCol',email:'emailCol',phone:'phoneCol'};
+ const layout=layouts[company]||layouts.front;
  await Promise.all(['Poppins','Montserrat'].map(f=>document.fonts.load('500 12pt "'+f+'"')));
- const scale=4,canvas=document.createElement('canvas');canvas.width=Math.round(p.cardW*scale);canvas.height=Math.round(p.cardH*scale);
- const ctx=canvas.getContext('2d');ctx.textBaseline='top';let y=p.textY*scale;
- for(const l of lines){
-  const size=l.size*96/72*scale;ctx.font=l.weight+' '+size+'px "'+l.family+'", sans-serif';ctx.fillStyle=l.color;
-  const maxWidth=Math.max(4,(p.cardW-p.textX-2)*scale);let value=l.text;
-  while(value.length>1&&ctx.measureText(value).width>maxWidth)value=value.slice(0,-1);
-  if(value!==l.text)value=value.slice(0,-1)+'…';
-  ctx.fillText(value,p.textX*scale,y);y+=p.lineGap*scale;if(y>=p.cardH*scale)break;
+ for(const field of fieldKeys){
+  const col=$(map[field]).value,value=col?String(item[col]??'').trim():'';
+  if(!value)continue;
+  const l=layout[field],family=field==='title'?'Montserrat':'Poppins',weight=field==='name'?600:field==='title'?500:400;
+  const px=l.size*25.4/72*scale;
+  ctx.font=weight+' '+px+'px "'+family+'", sans-serif';ctx.fillStyle=l.color;
+  const allowed=Math.max(2,p.cardW-l.x-1)*scale;let output=value;
+  while(output.length>1&&ctx.measureText(output).width>allowed)output=output.slice(0,-1);
+  if(output!==value)output=output.slice(0,-1)+'…';
+  ctx.fillText(output,l.x*scale,l.y*scale);
  }
- const raw=atob(canvas.toDataURL('image/png').split(',')[1]);const png=await pdf.embedPng(Uint8Array.from(raw,c=>c.charCodeAt(0)));
- page.drawImage(png,{x:mm(pos.x),y:A4.height-mm(pos.y+p.cardH),width:mm(p.cardW),height:mm(p.cardH)});
+ const b64=canvas.toDataURL('image/png').split(',')[1],raw=atob(b64);
+ const img=await pdf.embedPng(Uint8Array.from(raw,c=>c.charCodeAt(0)));
+ page.drawImage(img,{x:mm(pos.x),y:A4.height-mm(pos.y+p.cardH),width:mm(p.cardW),height:mm(p.cardH)});
 }
 function drawNumber(page,num){page.drawText(String(num),{x:mm(7),y:mm(6),size:7,color:rgb(.65,.65,.65)});}
 async function generate(test=false){let p=setting();const layout=positions(p);let cards=getRecords(test);if(cards.length===0)throw Error('There are no cards to print. Add a quantity or upload a CSV.');if(cards.length>50000)throw Error('Maximum 50,000 cards per batch.');if(!test&&!state.front)throw Error('Upload your front Canva artwork first.');if(state.mode==='personal'&&!test&&!(Object.keys(cards[0]||{}).some(k=>k!=='quantity'&&['nameCol','titleCol','emailCol','phoneCol'].some(id=>$(id).value===k))))throw Error('Map at least one personalized text column.');
-const pdf=await PDFDocument.create();pdf.setTitle(test?'Duplex alignment test':'CardPress A4 business cards');const regular=await pdf.embedFont(StandardFonts.Helvetica),bold=await pdf.embedFont(StandardFonts.HelveticaBold);const front=await embedded(pdf,state.front),alternate=await embedded(pdf,state.alternate),back=await embedded(pdf,state.back);const total=Math.ceil(cards.length/10);for(let sheetNum=0;sheetNum<total;sheetNum++){const chunk=cards.slice(sheetNum*10,sheetNum*10+10);const first=pdf.addPage([A4.width,A4.height]);for(let i=0;i<chunk.length;i++){const pos=layout[i];const useAlternate=!test&&(state.mode==='same'?$('templateChoice').value==='alternate':/santo/i.test(String(chunk[i][$('companyCol').value]||'')));placeArt(first,useAlternate&&alternate?alternate:front,pos,p);if(test){first.drawRectangle({x:mm(pos.x),y:A4.height-mm(pos.y+p.cardH),width:mm(p.cardW),height:mm(p.cardH),borderWidth:.35,borderColor:rgb(.1,.3,.6)});}if(test)overlay(first,chunk[i],pos,p,regular,bold,true);else if(state.mode==='personal')await overlayStyled(pdf,first,chunk[i],pos,p);drawCrop(first,pos,p);if(p.outline)first.drawRectangle({x:mm(pos.x),y:A4.height-mm(pos.y+p.cardH),width:mm(p.cardW),height:mm(p.cardH),borderWidth:.35,borderColor:rgb(.75,.75,.75)});}if(test){first.drawText('FRONT · check each number matches the back after cutting',{x:mm(9),y:mm(6),size:7,color:tint});}
+const pdf=await PDFDocument.create();pdf.setTitle(test?'Duplex alignment test':'CardPress A4 business cards');const regular=await pdf.embedFont(StandardFonts.Helvetica),bold=await pdf.embedFont(StandardFonts.HelveticaBold);const front=await embedded(pdf,state.front),alternate=await embedded(pdf,state.alternate),back=await embedded(pdf,state.back);const total=Math.ceil(cards.length/10);for(let sheetNum=0;sheetNum<total;sheetNum++){const chunk=cards.slice(sheetNum*10,sheetNum*10+10);const first=pdf.addPage([A4.width,A4.height]);for(let i=0;i<chunk.length;i++){const pos=layout[i];const useAlternate=!test&&(state.mode==='same'?$('templateChoice').value==='alternate':/santo/i.test(String(chunk[i][$('companyCol').value]||'')));placeArt(first,useAlternate&&alternate?alternate:front,pos,p);if(test){first.drawRectangle({x:mm(pos.x),y:A4.height-mm(pos.y+p.cardH),width:mm(p.cardW),height:mm(p.cardH),borderWidth:.35,borderColor:rgb(.1,.3,.6)});}if(test)overlay(first,chunk[i],pos,p,regular,bold,true);else if(state.mode==='personal')await overlayStyled(pdf,first,chunk[i],pos,p,useAlternate?'alternate':'front');drawCrop(first,pos,p);if(p.outline)first.drawRectangle({x:mm(pos.x),y:A4.height-mm(pos.y+p.cardH),width:mm(p.cardW),height:mm(p.cardH),borderWidth:.35,borderColor:rgb(.75,.75,.75)});}if(test){first.drawText('FRONT · check each number matches the back after cutting',{x:mm(9),y:mm(6),size:7,color:tint});}
 if(back||test){const second=pdf.addPage([A4.width,A4.height]);for(let i=0;i<chunk.length;i++){const pos=layout[mappedIndex(i,p.mirror)];placeArt(second,back,pos,p);if(test){second.drawRectangle({x:mm(pos.x),y:A4.height-mm(pos.y+p.cardH),width:mm(p.cardW),height:mm(p.cardH),borderWidth:.35,borderColor:rgb(.7,.2,.2)});second.drawText('BACK '+(i+1),{x:mm(pos.x+5),y:A4.height-mm(pos.y+20),size:12,font:bold,color:rgb(.7,.2,.2)});}drawCrop(second,pos,p);if(p.outline)second.drawRectangle({x:mm(pos.x),y:A4.height-mm(pos.y+p.cardH),width:mm(p.cardW),height:mm(p.cardH),borderWidth:.35,borderColor:rgb(.75,.75,.75)});}if(test)second.drawText('BACK · try different back placement or duplex flip if numbers do not match',{x:mm(9),y:mm(6),size:7,color:tint});}
 if(sheetNum%20===0)await new Promise(resolve=>setTimeout(resolve,0));}
 const bytes=await pdf.save();const blob=new Blob([bytes],{type:'application/pdf'}),url=URL.createObjectURL(blob),anchor=document.createElement('a');anchor.href=url;anchor.download=test?'cardpress-duplex-test.pdf':'cardpress-a4-'+cards.length+'-cards.pdf';anchor.click();setTimeout(()=>URL.revokeObjectURL(url),10000);return `${total} sheet${total>1?'s':''} · ${cards.length} card${cards.length>1?'s':''} · ${back||test?'front/back interleaved':'single-sided'}`;}
+
+const fieldKeys=['name','title','email','phone'];
+const defaultLayout=()=>({
+ name:{x:8,y:16,size:10,color:'#244a69'},
+ title:{x:8,y:23,size:8,color:'#244a69'},
+ email:{x:8,y:33,size:7,color:'#244a69'},
+ phone:{x:8,y:39,size:7,color:'#244a69'}
+});
+let layouts;
+try{const saved=JSON.parse(localStorage.getItem('cardpress-layouts-v2')||'{}');layouts={front:{...defaultLayout(),...(saved.front||{})},alternate:{...defaultLayout(),...(saved.alternate||{})}};}catch{layouts={front:defaultLayout(),alternate:defaultLayout()};}
+const editorData=()=>({company:$('editorCompany').value,field:$('editorField').value});
+function updateEditorInputs(){
+ const {company,field}=editorData(),v=layouts[company][field];
+ $('editX').value=v.x;$('editY').value=v.y;$('editSize').value=v.size;$('editColor').value=v.color;
+ renderEditor();
+}
+function saveLayouts(){localStorage.setItem('cardpress-layouts-v2',JSON.stringify(layouts));}
+function renderEditor(){
+ const company=$('editorCompany').value,bg=company==='alternate'?state.alternateUrl:state.frontUrl;
+ $('cardEditorBackground').style.backgroundImage=bg?'url("'+bg+'")':'none';
+ $('cardEditor').style.aspectRatio=setting().cardW+'/'+setting().cardH;
+ const handles=$('editorHandles');handles.innerHTML='';
+ for(const field of fieldKeys){
+  const l=layouts[company][field],el=document.createElement('div');
+  el.className='editor-handle'+(field===$('editorField').value?' selected':'');
+  el.dataset.field=field;el.textContent=$('preview'+field[0].toUpperCase()+field.slice(1)).value||field;
+  el.style.left=(l.x/setting().cardW*100)+'%';el.style.top=(l.y/setting().cardH*100)+'%';
+  el.style.fontFamily=field==='title'?'Montserrat, sans-serif':'Poppins, sans-serif';
+  el.style.fontSize=(l.size*25.4/72/setting().cardH*$('cardEditor').clientHeight)+'px';
+  el.style.color=l.color;
+  el.addEventListener('pointerdown',e=>{
+   e.preventDefault();$('editorField').value=field;updateEditorInputs();
+   el.setPointerCapture(e.pointerId);
+   const startX=e.clientX,startY=e.clientY,oldX=l.x,oldY=l.y;
+   const move=ev=>{const r=$('cardEditor').getBoundingClientRect();
+    l.x=Math.max(0,Math.min(setting().cardW-2,oldX+(ev.clientX-startX)/r.width*setting().cardW));
+    l.y=Math.max(0,Math.min(setting().cardH-2,oldY+(ev.clientY-startY)/r.height*setting().cardH));
+    el.style.left=(l.x/setting().cardW*100)+'%';el.style.top=(l.y/setting().cardH*100)+'%';
+    $('editX').value=l.x.toFixed(1);$('editY').value=l.y.toFixed(1);
+   };
+   const up=()=>{el.removeEventListener('pointermove',move);saveLayouts();};
+   el.addEventListener('pointermove',move);el.addEventListener('pointerup',up,{once:true});el.addEventListener('pointercancel',up,{once:true});
+  });
+  handles.appendChild(el);
+ }
+}
+for(const id of ['editorCompany','editorField'])$(id).addEventListener('change',updateEditorInputs);
+for(const [id,key] of [['editX','x'],['editY','y'],['editSize','size'],['editColor','color']])$(id).addEventListener('input',()=>{
+ const {company,field}=editorData();layouts[company][field][key]=key==='color'?$(id).value:Number($(id).value);saveLayouts();renderEditor();
+});
+for(const id of ['previewName','previewTitle','previewEmail','previewPhone','cardW','cardH'])$(id).addEventListener('input',renderEditor);
+$('resetLayout').addEventListener('click',()=>{layouts[$('editorCompany').value]=defaultLayout();saveLayouts();updateEditorInputs();});
+$('templateChoice').addEventListener('change',()=>{$('editorCompany').value=$('templateChoice').value;updateEditorInputs();});
+for(const side of ['front','alternate'])$(side+'File').addEventListener('change',()=>setTimeout(renderEditor,200));
+updateEditorInputs();
+
 for(const [id,isTest] of [['generate',false],['test',true]])$(id).addEventListener('click',async()=>{const btn=$(id);btn.disabled=true;setStatus('Generating PDF…');try{setStatus('PDF generated: '+await generate(isTest));}catch(err){console.error(err);setStatus(err.message||'Unexpected error generating PDF.',true);}finally{btn.disabled=false;}});
 updatePreview();
